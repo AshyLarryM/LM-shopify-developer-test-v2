@@ -349,12 +349,6 @@
                   {{ form | payment_terms }}
                 {%- endform -%}
               </div>
-            {%- when 'description' -%}
-              {%- if product.description != blank -%}
-                <div class="product__description rte quick-add-hidden">
-                  {{ product.description }}
-                </div>
-              {%- endif -%}
             {%- when 'custom_liquid' -%}
               {{ block.settings.custom_liquid }}
             {%- when 'collapsible_tab' -%}
@@ -407,7 +401,16 @@
                     {% render 'icon-plus' %}
                   </button>
                 </quantity-input>
+
+                <div id="total-price-{{ section.id }}" class="total-price">
+                  Your total: <span id="total-amount-{{ section.id }}">$0.00</span>
+                </div>
+                
+                
               </div>
+
+              
+
             {%- when 'popup' -%}
               <modal-opener
                 class="product-popup-modal__opener no-js-hidden quick-add-hidden"
@@ -426,50 +429,16 @@
               <a href="{{ block.settings.page.url }}" class="product-popup-modal__button link no-js">
                 {{- block.settings.text -}}
               </a>
-            {%- when 'share' -%}
-              <share-button
-                id="Share-{{ section.id }}"
-                class="share-button quick-add-hidden"
-                {{ block.shopify_attributes }}
-              >
-                <button class="share-button__button hidden">
-                  {% render 'icon-share' %}
-                  {{ block.settings.share_label | escape }}
-                </button>
-                <details id="Details-{{ block.id }}-{{ section.id }}">
-                  <summary class="share-button__button">
-                    {% render 'icon-share' %}
-                    {{ block.settings.share_label | escape }}
-                  </summary>
-                  <div id="Product-share-{{ section.id }}" class="share-button__fallback motion-reduce">
-                    <div class="field">
-                      <span id="ShareMessage-{{ section.id }}" class="share-button__message hidden" role="status">
-                      </span>
-                      <input
-                        type="text"
-                        class="field__input"
-                        id="url"
-                        value="{{ product.selected_variant.url | default: product.url | prepend: request.origin }}"
-                        placeholder="{{ 'general.share.share_url' | t }}"
-                        onclick="this.select();"
-                        readonly
-                      >
-                      <label class="field__label" for="url">{{ 'general.share.share_url' | t }}</label>
-                    </div>
-                    <button class="share-button__close hidden no-js-hidden">
-                      {% render 'icon-close' %}
-                      <span class="visually-hidden">{{ 'general.share.close' | t }}</span>
-                    </button>
-                    <button class="share-button__copy no-js-hidden">
-                      {% render 'icon-clipboard' %}
-                      <span class="visually-hidden">{{ 'general.share.copy_to_clipboard' | t }}</span>
-                    </button>
-                  </div>
-                </details>
-              </share-button>
-              <script src="{{ 'share.js' | asset_url }}" defer="defer"></script>
+            
             {%- when 'variant_picker' -%}
               {%- unless product.has_only_default_variant -%}
+
+                {%- if product.description != blank -%}
+                  <div class="product__description rte quick-add-hidden">
+                    {{ product.description }}
+                  </div>
+                {%- endif -%}
+
                 {%- if block.settings.picker_type == 'button' -%}
                   <variant-radios
                     class="no-js-hidden"
@@ -491,9 +460,13 @@
                               checked
                             {% endif %}
                           >
-                          <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
-                            {{ value }}
-                          </label>
+                            <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" class="variant-label">
+                              {% for variant in product.variants %}
+                                {% if variant.title == value %}
+                                  <img name="{{ value }}" src="{{ variant.image | image_url: width: 97, height: 97 }}" class="variant-swatch-image" />
+                                {% endif %}
+                              {% endfor %}
+                            </label>
                         {%- endfor -%}
                       </fieldset>
                     {%- endfor -%}
@@ -602,6 +575,7 @@
                       disabled
                     >
                     <div class="product-form__buttons">
+                      
                       <button
                         type="submit"
                         name="add"
@@ -1158,6 +1132,26 @@
       ]
     }
   </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const quantityInput = document.getElementById('Quantity-{{ section.id }}');
+      const totalPriceElement = document.getElementById('total-amount-{{ section.id }}');
+      const productPrice = {{ product.price | divided_by: 100 }}; // Assuming price is in cents
+      
+      function updateTotalPrice() {
+        const quantity = parseInt(quantityInput.value);
+        const total = (productPrice * quantity).toFixed(2);
+        totalPriceElement.textContent = `$${total}`;
+      }
+  
+      // Update the total price when the page loads and when the quantity changes
+      updateTotalPrice();
+      quantityInput.addEventListener('change', updateTotalPrice);
+    });
+  </script>
+  
+
 </section>
 
 {% schema %}
