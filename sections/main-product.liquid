@@ -448,7 +448,7 @@
                   >
                     {%- for option in product.options_with_values -%}
                       <fieldset class="js product-form__input">
-                        <legend class="form__label">{{ option.name }}</legend>
+                        <legend id="option-{{ option.position }}-legend" class="form__label">{{ option.name }}: <strong>{{option.selected_value }}</strong></legend>
                         {%- for value in option.values -%}
                           <input
                             type="radio"
@@ -459,6 +459,8 @@
                             {% if option.selected_value == value %}
                               checked
                             {% endif %}
+                            data-option-position="{{ option.position }}"
+                            data-option-name="{{ option.name }}"
                           >
                             <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" class="variant-label">
                               {% for variant in product.variants %}
@@ -1076,6 +1078,21 @@
 
       document.querySelector('#Variants-{{ section.id }}').addEventListener('change', function(event) {
         hiddenInput.value = event.currentTarget.value;
+      });
+    });
+  </script>
+
+  <script>
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const optionPosition = this.getAttribute('data-option-position');
+        const optionName = this.getAttribute('data-option-name');
+        const selectedValue = this.value;
+    
+        const legend = document.getElementById(`option-${optionPosition}-legend`);
+        if (legend) {
+          legend.textContent = `${optionName}: ${selectedValue}`;
+        }
       });
     });
   </script>

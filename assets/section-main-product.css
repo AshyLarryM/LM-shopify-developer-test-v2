@@ -388,6 +388,7 @@ a.product__text {
 
 
 .product__accordion .accordion__content {
+  display: hidden;
   padding: 0 1rem;
 }
 
