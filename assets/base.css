@@ -2957,3 +2957,11 @@ details-disclosure > details {
     outline: transparent solid 1px;
   }
 }
+
+@media screen and (max-width: 749px) {
+  .button--full-width {
+    width: calc(100% - 150px) !important;
+    margin-top: -100px;
+    margin-left: 150px;
+  }
+}

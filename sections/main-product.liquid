@@ -1091,7 +1091,7 @@
     
         const legend = document.getElementById(`option-${optionPosition}-legend`);
         if (legend) {
-          legend.textContent = `${optionName}: ${selectedValue}`;
+          legend.innerHTML = `${optionName}: <strong>${selectedValue}</strong>`; // keep selected value bold on rerender
         }
       });
     });

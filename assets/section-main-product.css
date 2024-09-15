@@ -304,6 +304,13 @@ fieldset.product-form__input .form__label {
   margin-bottom: 1rem;
 }
 
+@media screen and (max-width: 749px) {
+  .product-form__submit {
+    margin-bottom: 3rem;
+  }
+  
+}
+
 .no-js .product-form__submit.button--secondary {
   --color-button: var(--color-base-accent-1);
   --color-button-text: var(--color-base-solid-button-labels);
